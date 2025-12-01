@@ -6,34 +6,43 @@ plugins {
 
 android {
     namespace = "com.v2ray.ang"
+    //noinspection GradleDependency
     compileSdk = 35
 
     defaultConfig {
         applicationId = "app.tunnelio.android.client"
         minSdk = 21
+        //noinspection OldTargetApi
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
         multiDexEnabled = true
 
         val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
-        splits {
-            abi {
-                isEnable = true
-                reset()
-                if (abiFilterList != null && abiFilterList.isNotEmpty()) {
-                    include(*abiFilterList.toTypedArray())
-                } else {
-                    include(
-                        "arm64-v8a",
-                        "armeabi-v7a",
-                        "x86_64",
-                        "x86"
-                    )
-                }
-                isUniversalApk = abiFilterList.isNullOrEmpty()
-            }
+//        splits {
+//            abi {
+//                isEnable = true
+//                reset()
+//                if (abiFilterList != null && abiFilterList.isNotEmpty()) {
+//                    include(*abiFilterList.toTypedArray())
+//                } else {
+//                    include(
+//                        "arm64-v8a",
+//                        "armeabi-v7a",
+//                        "x86_64",
+//                        "x86"
+//                    )
+//                }
+//                isUniversalApk = abiFilterList.isNullOrEmpty()
+//            }
+//        }
+
+        ndk {
+            // این خط به گریدل میگوید تمام این معماری‌ها را در APK نهایی نگه دار
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
         }
+
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -72,28 +81,28 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
-    applicationVariants.all {
-        val variant = this
-            val versionCodes =
-                mapOf("armeabi-v7a" to 4, "arm64-v8a" to 4, "x86" to 4, "x86_64" to 4, "universal" to 4)
-
-            variant.outputs
-                .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
-                .forEach { output ->
-                    val abi = if (output.getFilter("ABI") != null)
-                        output.getFilter("ABI")
-                    else
-                        "universal"
-
-                    output.outputFileName = "Tunnelio_${variant.versionName}_${abi}.apk"
-                    if (versionCodes.containsKey(abi)) {
-                        output.versionCodeOverride =
-                            (1000000 * versionCodes[abi]!!).plus(variant.versionCode)
-                    } else {
-                        return@forEach
-                    }
-        }
-    }
+//    applicationVariants.all {
+//        val variant = this
+//            val versionCodes =
+//                mapOf("armeabi-v7a" to 4, "arm64-v8a" to 4, "x86" to 4, "x86_64" to 4, "universal" to 4)
+//
+//            variant.outputs
+//                .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
+//                .forEach { output ->
+//                    val abi = if (output.getFilter("ABI") != null)
+//                        output.getFilter("ABI")
+//                    else
+//                        "universal"
+//
+//                    output.outputFileName = "Tunnelio_${variant.versionName}_${abi}.apk"
+//                    if (versionCodes.containsKey(abi)) {
+//                        output.versionCodeOverride =
+//                            (1000000 * versionCodes[abi]!!).plus(variant.versionCode)
+//                    } else {
+//                        return@forEach
+//                    }
+//        }
+//    }
 
     buildFeatures {
         viewBinding = true
