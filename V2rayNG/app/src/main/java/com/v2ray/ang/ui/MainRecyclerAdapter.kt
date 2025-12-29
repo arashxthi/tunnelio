@@ -201,6 +201,11 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
     private fun showQRCode(guid: String) {
         val ivBinding = ItemQrcodeBinding.inflate(LayoutInflater.from(mActivity))
         ivBinding.ivQcode.setImageBitmap(AngConfigManager.share2QRCode(guid))
+        if (share_method.isNotEmpty()) {
+            ivBinding.ivQcode.contentDescription = share_method[0]
+        } else {
+            ivBinding.ivQcode.contentDescription = "QR Code"
+        }
         AlertDialog.Builder(mActivity).setView(ivBinding.root).show()
     }
 
@@ -258,7 +263,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
      */
     private fun removeServer(guid: String, position: Int) {
         if (guid != MmkvManager.getSelectServer()) {
-            if (MmkvManager.decodeSettingsBool(AppConfig.PREF_CONFIRM_REMOVE) == true) {
+            if (MmkvManager.decodeSettingsBool(AppConfig.PREF_CONFIRM_REMOVE)) {
                 AlertDialog.Builder(mActivity).setMessage(R.string.del_config_comfirm)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
                         removeServerSub(guid, position)

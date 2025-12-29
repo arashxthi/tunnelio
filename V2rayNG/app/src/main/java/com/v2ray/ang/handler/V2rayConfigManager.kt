@@ -16,7 +16,6 @@ import com.v2ray.ang.dto.V2rayConfig.OutboundBean.OutSettingsBean
 import com.v2ray.ang.dto.V2rayConfig.OutboundBean.StreamSettingsBean
 import com.v2ray.ang.dto.V2rayConfig.RoutingBean.RulesBean
 import com.v2ray.ang.extension.isNotNullEmpty
-import com.v2ray.ang.fmt.CustomFmt
 import com.v2ray.ang.fmt.HttpFmt
 import com.v2ray.ang.fmt.ShadowsocksFmt
 import com.v2ray.ang.fmt.SocksFmt
@@ -178,7 +177,7 @@ object V2rayConfigManager {
                 if (subItem?.intelligentSelectionFilter.isNullOrEmpty() || config.remarks.isEmpty()) {
                     return@filter true
                 }
-                Regex(pattern = subItem?.intelligentSelectionFilter!!).containsMatchIn(input = config.remarks)
+                Regex(pattern = subItem.intelligentSelectionFilter.orEmpty()).containsMatchIn(input = config.remarks)
             }.toList()
 
         if (validConfigs.isEmpty()) {
@@ -202,7 +201,7 @@ object V2rayConfigManager {
         getInbounds(v2rayConfig)
 
         v2rayConfig.outbounds.removeAt(0)
-        val outboundsList = mutableListOf<V2rayConfig.OutboundBean>()
+        val outboundsList = mutableListOf<OutboundBean>()
         var index = 0
         for (config in validConfigs) {
             index++
@@ -520,7 +519,7 @@ object V2rayConfigManager {
             // DNS outbound
             if (v2rayConfig.outbounds.none { e -> e.protocol == "dns" && e.tag == "dns-out" }) {
                 v2rayConfig.outbounds.add(
-                    V2rayConfig.OutboundBean(
+                    OutboundBean(
                         protocol = "dns",
                         tag = "dns-out",
                         settings = null,
@@ -775,7 +774,7 @@ object V2rayConfigManager {
      * @param outbound The outbound connection to update
      * @return true if the update was successful, false otherwise
      */
-    private fun updateOutboundWithGlobalSettings(outbound: V2rayConfig.OutboundBean): Boolean {
+    private fun updateOutboundWithGlobalSettings(outbound: OutboundBean): Boolean {
         try {
             var muxEnabled = MmkvManager.decodeSettingsBool(AppConfig.PREF_MUX_ENABLED, false)
             val protocol = outbound.protocol
@@ -938,7 +937,7 @@ object V2rayConfigManager {
             }
 
             val fragmentOutbound =
-                V2rayConfig.OutboundBean(
+                OutboundBean(
                     protocol = AppConfig.PROTOCOL_FREEDOM,
                     tag = AppConfig.TAG_FRAGMENT,
                     mux = null
@@ -956,8 +955,8 @@ object V2rayConfigManager {
                 packets = "tlshello"
             }
 
-            fragmentOutbound.settings = OutboundBean.OutSettingsBean(
-                fragment = OutboundBean.OutSettingsBean.FragmentBean(
+            fragmentOutbound.settings = OutSettingsBean(
+                fragment = OutSettingsBean.FragmentBean(
                     packets = packets,
                     length = MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_LENGTH)
                         ?: "50-100",
@@ -965,7 +964,7 @@ object V2rayConfigManager {
                         ?: "10-20"
                 ),
                 noises = listOf(
-                    OutboundBean.OutSettingsBean.NoiseBean(
+                    OutSettingsBean.NoiseBean(
                         type = "rand",
                         packet = "10-20",
                         delay = "10-16",
@@ -1011,7 +1010,7 @@ object V2rayConfigManager {
 
             if (newHosts.containsKey(domain)) {
                 item.ensureSockopt().domainStrategy = "UseIP"
-                item.ensureSockopt().happyEyeballs = StreamSettingsBean.happyEyeballsBean(
+                item.ensureSockopt().happyEyeballs = StreamSettingsBean.HappyEyeballsBean(
                     prioritizeIPv6 = preferIpv6,
                     interleave = 2
                 )
@@ -1022,7 +1021,7 @@ object V2rayConfigManager {
             if (resolvedIps.isNullOrEmpty()) continue
 
             item.ensureSockopt().domainStrategy = "UseIP"
-            item.ensureSockopt().happyEyeballs = StreamSettingsBean.happyEyeballsBean(
+            item.ensureSockopt().happyEyeballs = StreamSettingsBean.HappyEyeballsBean(
                 prioritizeIPv6 = preferIpv6,
                 interleave = 2
             )
@@ -1044,7 +1043,7 @@ object V2rayConfigManager {
      * @param profileItem The profile item to convert
      * @return OutboundBean configuration for the profile, or null if not supported
      */
-    private fun convertProfile2Outbound(profileItem: ProfileItem): V2rayConfig.OutboundBean? {
+    private fun convertProfile2Outbound(profileItem: ProfileItem): OutboundBean? {
         return when (profileItem.configType) {
             EConfigType.VMESS -> VmessFmt.toOutbound(profileItem)
             EConfigType.CUSTOM -> null

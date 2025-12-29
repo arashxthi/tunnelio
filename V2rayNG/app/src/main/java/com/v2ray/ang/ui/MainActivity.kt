@@ -35,7 +35,6 @@ import com.v2ray.ang.dto.EConfigType
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.extension.toastError
 import com.v2ray.ang.handler.AngConfigManager
-import com.v2ray.ang.handler.MigrateManager
 import com.v2ray.ang.handler.MmkvManager
 import com.v2ray.ang.helper.SimpleItemTouchHelperCallback
 import com.v2ray.ang.handler.V2RayServiceManager
@@ -174,7 +173,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         initGroupTab()
         setupViewModel()
-        migrateLegacy()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -211,32 +209,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (isRunning) {
                 binding.fab.setIconResource(R.drawable.ic_stop_24dp)
                 binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_active))
+                binding.fab.contentDescription = getString(R.string.action_stop_service)
                 setTestState(getString(R.string.connection_connected))
                 binding.layoutTest.isFocusable = true
             } else {
                 binding.fab.setIconResource(R.drawable.ic_play_24dp)
                 binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_inactive))
+                binding.fab.contentDescription = getString(R.string.tasker_start_service)
                 setTestState(getString(R.string.connection_not_connected))
                 binding.layoutTest.isFocusable = false
             }
         }
         mainViewModel.startListenBroadcast()
         mainViewModel.initAssets(assets)
-    }
-
-    private fun migrateLegacy() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val result = MigrateManager.migrateServerConfig2Profile()
-            launch(Dispatchers.Main) {
-                if (result) {
-                    toast(getString(R.string.migration_success))
-                    mainViewModel.reloadServerList()
-                } else {
-                    //toast(getString(R.string.migration_fail))
-                }
-            }
-
-        }
     }
 
     private fun initGroupTab() {
