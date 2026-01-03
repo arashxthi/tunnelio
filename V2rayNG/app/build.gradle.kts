@@ -11,14 +11,14 @@ android {
 
     defaultConfig {
         applicationId = "app.tunnelio.android.client"
-        minSdk = 21
+        minSdk = 24
         //noinspection OldTargetApi
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
         multiDexEnabled = true
 
-        val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
+//        val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
 //        splits {
 //            abi {
 //                isEnable = true
