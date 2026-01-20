@@ -8,9 +8,9 @@ import com.v2ray.ang.dto.ProfileItem
 import com.v2ray.ang.dto.RulesetItem
 import com.v2ray.ang.dto.ServerAffiliationInfo
 import com.v2ray.ang.dto.SubscriptionItem
+import com.v2ray.ang.dto.WebDavConfig
 import com.v2ray.ang.util.JsonUtil
 import com.v2ray.ang.util.Utils
-import kotlin.collections.mutableListOf
 
 object MmkvManager {
 
@@ -27,6 +27,7 @@ object MmkvManager {
     private const val KEY_SELECTED_SERVER = "SELECTED_SERVER"
     private const val KEY_ANG_CONFIGS = "ANG_CONFIGS"
     private const val KEY_SUB_IDS = "SUB_IDS"
+    private const val KEY_WEBDAV_CONFIG = "WEBDAV_CONFIG"
 
     //private val profileStorage by lazy { MMKV.mmkvWithID(ID_PROFILE_CONFIG, MMKV.MULTI_PROCESS_MODE) }
     private val mainStorage by lazy { MMKV.mmkvWithID(ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
@@ -468,6 +469,7 @@ object MmkvManager {
 
     //endregion
 
+    //region settings
     /**
      * Encodes the settings.
      *
@@ -487,6 +489,28 @@ object MmkvManager {
      * @return Whether the encoding was successful.
      */
     fun encodeSettings(key: String, value: Int): Boolean {
+        return settingsStorage.encode(key, value)
+    }
+
+    /**
+     * Encodes the settings.
+     *
+     * @param key The settings key.
+     * @param value The settings value.
+     * @return Whether the encoding was successful.
+     */
+    fun encodeSettings(key: String, value: Long): Boolean {
+        return settingsStorage.encode(key, value)
+    }
+
+    /**
+     * Encodes the settings.
+     *
+     * @param key The settings key.
+     * @param value The settings value.
+     * @return Whether the encoding was successful.
+     */
+    fun encodeSettings(key: String, value: Float): Boolean {
         return settingsStorage.encode(key, value)
     }
 
@@ -534,6 +558,39 @@ object MmkvManager {
     }
 
     /**
+     * Decodes the settings integer.
+     *
+     * @param key The settings key.
+     * @param defaultValue The default value.
+     * @return The settings value.
+     */
+    fun decodeSettingsInt(key: String, defaultValue: Int): Int {
+        return settingsStorage.decodeInt(key, defaultValue)
+    }
+
+    /**
+     * Decodes the settings long.
+     *
+     * @param key The settings key.
+     * @param defaultValue The default value.
+     * @return The settings value.
+     */
+    fun decodeSettingsLong(key: String, defaultValue: Long): Long {
+        return settingsStorage.decodeLong(key, defaultValue)
+    }
+
+    /**
+     * Decodes the settings float.
+     *
+     * @param key The settings key.
+     * @param defaultValue The default value.
+     * @return The settings value.
+     */
+    fun decodeSettingsFloat(key: String, defaultValue: Float): Float {
+        return settingsStorage.decodeFloat(key, defaultValue)
+    }
+
+    /**
      * Decodes the settings boolean.
      *
      * @param key The settings key.
@@ -564,10 +621,6 @@ object MmkvManager {
         return settingsStorage.decodeStringSet(key)
     }
 
-    //endregion
-
-    //region Others
-
     /**
      * Encodes the start on boot setting.
      *
@@ -588,4 +641,22 @@ object MmkvManager {
 
     //endregion
 
+    //region WebDAV
+
+    /**
+     * Encodes the WebDAV config as JSON into storage.
+     */
+    fun encodeWebDavConfig(config: WebDavConfig): Boolean {
+        return mainStorage.encode(KEY_WEBDAV_CONFIG, JsonUtil.toJson(config))
+    }
+
+    /**
+     * Decodes the WebDAV config from storage.
+     */
+    fun decodeWebDavConfig(): WebDavConfig? {
+        val json = mainStorage.decodeString(KEY_WEBDAV_CONFIG) ?: return null
+        return JsonUtil.fromJson(json, WebDavConfig::class.java)
+    }
+
+    //endregion
 }
