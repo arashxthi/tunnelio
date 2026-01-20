@@ -1,0 +1,28 @@
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:aapt="http://schemas.android.com/aapt"
+android:width="320dp"
+android:height="320dp"
+android:viewportWidth="320"
+android:viewportHeight="320">
+
+<group
+    android:name="rotationGroup"
+    android:pivotX="160"
+    android:pivotY="160">
+    <path
+        android:name="morphPath"
+        android:pathData="M92.1857 22.5675C123.276 -7.5225 172.724 -7.5225 203.814 22.5675C213.328 31.7675 224.984 38.4775 237.738 42.0875C279.419 53.8875 304.142 96.5874 293.552 138.467C290.312 151.287 290.312 164.707 293.552 177.527C304.142 219.407 279.419 262.107 237.738 273.907C224.984 277.517 213.328 284.227 203.814 293.427C172.724 323.517 123.276 323.517 92.1857 293.427C82.6717 284.227 71.0157 277.517 58.2617 273.907C16.5807 262.107 -8.14232 219.407 2.44768 177.527C5.68768 164.707 5.68768 151.287 2.44768 138.467C-8.14232 96.5874 16.5807 53.8875 58.2617 42.0875C71.0157 38.4775 82.6717 31.7675 92.1857 22.5675Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="160"
+                android:centerY="160"
+                android:type="sweep">
+                <item android:color="#00C853" android:offset="0.0"/>
+                <item android:color="#B2FF59" android:offset="0.5"/>
+                <item android:color="#00C853" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+</group>
+</vector>

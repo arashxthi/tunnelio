@@ -1,0 +1,9 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#40FFFFFF">
+
+    <item>
+        <selector>
+            <item android:drawable="@drawable/vpn_button_animated" />
+        </selector>
+    </item>
+</ripple>

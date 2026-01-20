@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/state_on"
+        android:drawable="@drawable/shape_connected"
+        android:state_selected="true" />
+
+    <item
+        android:id="@+id/state_off"
+        android:drawable="@drawable/shape_connect" />
+
+    <transition
+        android:fromId="@id/state_off"
+        android:toId="@id/state_on"
+        android:drawable="@drawable/avd_anim" /> <transition
+    android:fromId="@id/state_on"
+    android:toId="@id/state_off"
+    android:drawable="@drawable/avd_anim_reverse" /> </animated-selector>
