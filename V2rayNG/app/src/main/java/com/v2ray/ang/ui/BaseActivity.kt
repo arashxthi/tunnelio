@@ -20,7 +20,10 @@ import com.v2ray.ang.handler.SettingsManager
 import com.v2ray.ang.helper.CustomDividerItemDecoration
 import com.v2ray.ang.util.MyContextWrapper
 import com.v2ray.ang.util.Utils
-
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 /**
  * BaseActivity provides common helpers and UI wiring used across the app's activities.
@@ -38,12 +41,11 @@ abstract class BaseActivity : AppCompatActivity() {
     private var progressBar: LinearProgressIndicator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         if (!Utils.getDarkModeStatus(this)) {
-            WindowCompat.getInsetsController(window, window.decorView).apply {
-                isAppearanceLightStatusBars = true
-            }
+            WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
         }
     }
 
@@ -56,6 +58,24 @@ abstract class BaseActivity : AppCompatActivity() {
      * @param item the selected menu item
      * @return true if the event was handled, otherwise delegates to the superclass
      */
+
+    private fun applyEdgeToEdgeInsets(rootView: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, windowInsets ->
+            val systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val displayCutout = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout())
+
+            // مدیریت هوشمند فاصله با ناچ (Notch) طبق مستندات رسمی
+            val safeTop = maxOf(systemBars.top, displayCutout.top)
+
+            view.updatePadding(
+                top = safeTop,
+                bottom = systemBars.bottom,
+                left = systemBars.left,
+                right = systemBars.right
+            )
+            windowInsets
+        }
+    }
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
             // Handles the home button press by delegating to the onBackPressedDispatcher.
@@ -139,11 +159,14 @@ abstract class BaseActivity : AppCompatActivity() {
         val base = LayoutInflater.from(this).inflate(R.layout.activity_base, null)
         val container = base.findViewById<FrameLayout>(R.id.content_container)
         LayoutInflater.from(this).inflate(layoutResId, container, true)
+
+        // اعمال Insets به لایه پایه (activity_base)
+        applyEdgeToEdgeInsets(base)
+
         progressBar = base.findViewById(R.id.progress_bar)
         super.setContentView(base)
         setupToolbar(base, showHomeAsUp, title)
     }
-
     /**
      * Inflate the shared base layout, attach the provided child view (commonly a view-binding root)
      * into the base content container, cache the in-layout ProgressBar and configure the toolbar.
@@ -155,15 +178,27 @@ abstract class BaseActivity : AppCompatActivity() {
      * @param showHomeAsUp whether to show the up/home affordance on the toolbar (default true)
      * @param title optional activity title to set on the toolbar
      */
+
+    protected fun setContentViewNoToolbar(layoutResId: Int) {
+        // ۱. لود کردن لایه فرزند به صورت مستقیم
+        setContentView(layoutResId)
+
+        // ۲. پیدا کردن لایه ریشه (Root) و اعمال فواصل سیستم
+        val rootView = findViewById<View>(android.R.id.content)
+        applyEdgeToEdgeInsets(rootView)
+    }
     protected fun setContentViewWithToolbar(childView: View, showHomeAsUp: Boolean = true, title: CharSequence? = null) {
         val base = LayoutInflater.from(this).inflate(R.layout.activity_base, null)
         val container = base.findViewById<FrameLayout>(R.id.content_container)
         container.addView(childView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+
+        // اعمال Insets به لایه پایه
+        applyEdgeToEdgeInsets(base)
+
         progressBar = base.findViewById(R.id.progress_bar)
         super.setContentView(base)
         setupToolbar(base, showHomeAsUp, title)
     }
-
     /**
      * Internal helper that configures the MaterialToolbar found in the inflated base root.
      *

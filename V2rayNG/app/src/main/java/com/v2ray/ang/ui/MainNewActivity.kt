@@ -2,6 +2,7 @@ package com.v2ray.ang.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -20,7 +21,7 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.shape.ShapePath
 import com.v2ray.ang.R
 
-class MainNewActivity : AppCompatActivity() {
+class MainNewActivity : BaseActivity() {
 
     private lateinit var connectButton : ImageButton
     private lateinit var statusText: TextView
@@ -28,7 +29,7 @@ class MainNewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_main)
+        setContentViewNoToolbar(R.layout.activity_new_main)
 
 
 
