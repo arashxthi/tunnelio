@@ -108,13 +108,13 @@
     <string name="server_obfs_password">Пароль obfs</string>
     <string name="server_lab_port_hop">Смена портов (переопределяет порт)</string>
     <string name="server_lab_port_hop_interval">Интервал смены портов</string>
-    <string name="server_lab_stream_pinsha256">pinSHA256</string>
     <string name="server_lab_bandwidth_down">Входящая пропускная способность (допускаются: k/m/g/t)</string>
     <string name="server_lab_bandwidth_up">Исходящая пропускная способность (допускаются: k/m/g/t)</string>
     <string name="server_lab_xhttp_mode">Режим XHTTP</string>
     <string name="server_lab_xhttp_extra">Необработанный JSON XHTTP Extra, формат: { XHTTPObject }</string>
     <string name="server_lab_ech_config_list">EchConfigList</string>
     <string name="server_lab_ech_force_query">EchForceQuery</string>
+    <string name="server_lab_pinned_ca256">Отпечаток сертификата (SHA-256)</string>
 
     <!-- UserAssetActivity -->
     <string name="toast_asset_copy_failed">Невозможно скопировать файл, используйте файловый менеджер</string>
@@ -414,6 +414,8 @@
     <string-array name="policy_group_type">
         <item>Наименьшая задержка</item>
         <item>Наименьшая нагрузка</item>
+        <item>Случайно</item>
+        <item>По очереди</item>
     </string-array>
 
     <string-array name="config_backup_options">

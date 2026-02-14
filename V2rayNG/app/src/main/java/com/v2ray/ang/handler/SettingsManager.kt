@@ -11,13 +11,14 @@ import com.v2ray.ang.AppConfig.GEOIP_PRIVATE
 import com.v2ray.ang.AppConfig.GEOSITE_PRIVATE
 import com.v2ray.ang.AppConfig.TAG_DIRECT
 import com.v2ray.ang.AppConfig.VPN
-import com.v2ray.ang.dto.EConfigType
-import com.v2ray.ang.dto.Language
+import com.v2ray.ang.enums.EConfigType
+import com.v2ray.ang.enums.Language
 import com.v2ray.ang.dto.ProfileItem
-import com.v2ray.ang.dto.RoutingType
+import com.v2ray.ang.enums.RoutingType
 import com.v2ray.ang.dto.RulesetItem
+import com.v2ray.ang.dto.ServersCache
 import com.v2ray.ang.dto.V2rayConfig
-import com.v2ray.ang.dto.VpnInterfaceAddressConfig
+import com.v2ray.ang.enums.VpnInterfaceAddressConfig
 import com.v2ray.ang.handler.MmkvManager.decodeServerConfig
 import com.v2ray.ang.handler.MmkvManager.decodeServerList
 import com.v2ray.ang.util.JsonUtil
@@ -422,4 +423,30 @@ object SettingsManager {
             MmkvManager.encodeSettings(key, default)
         }
     }
+
+    fun migrateHysteria2PinSHA256() {
+        // Check if migration has already been done
+        val migrationKey = "hysteria2_pin_sha256_migrated"
+        if (MmkvManager.decodeSettingsBool(migrationKey, false)) {
+            return
+        }
+
+        val serverList = decodeServerList()
+
+        for (guid in serverList) {
+            val profile = decodeServerConfig(guid) ?: continue
+            if (profile.configType != EConfigType.HYSTERIA2) {
+                continue
+            }
+            if (profile.pinSHA256.isNullOrEmpty() || !profile.pinnedCA256.isNullOrEmpty()) {
+                continue
+            }
+            profile.pinnedCA256 = profile.pinSHA256
+            profile.pinSHA256 = null
+            MmkvManager.encodeServerConfig(guid, profile)
+        }
+
+        MmkvManager.encodeSettings(migrationKey, true)
+    }
+
 }
